@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment  #Define el objeto que se está creando
+metadata:
+  name: wordpress #Nombre del Deployment
+  namespace: naro #Nombre del namespace donde se va a crear
+  labels:
+    app: wordpress #Etiquetas asociadas
+spec:  #Especificaciones
+  selector:
+    matchLabels:
+      app: wordpress
+      tier: frontend
+  strategy:
+    type: Recreate #Los pods existentes tienen que ser eliminados antes de crear nuevos pods.
+  template: #Plantilla utilizada para crear los pods
+    metadata:
+      labels:
+        app: wordpress
+        tier: frontend
+    spec:
+      containers: #Lista de contenedores que se ejecutan dentro del pod, solo uno aquí.
+      - image: wordpress:6.2.1-apache #Imagen de docker
+        name: wordpress #Nombre del contenedor
+        env:
+        - name: WORDPRESS_DB_HOST
+          value: wordpress-mysql-service #Nombre del servicio de mysql que proporciona acceso a la base de datos
+        - name: WORDPRESS_DB_PASSWORD #Contraseña de la base de datos, obtenida de secret.
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+        - name: WORDPRESS_DB_USER #Usuario de la base de datos
+          value: wordpress
+        - name: WORDPRESS_DB_NAME #Nombre de la base de datos 
+          value: wordpress
+        ports: #Lista de puertos que deben de ser expuestos
+        - containerPort: 80 #Puerto en el que el contenedor escucha
+          name: wordpress #Nombre del puerto
+        resources: #Define los límites y solicitudes de los recursos (para el horizontal scaling)
+          limits:
+            cpu: 300m #Máximo de 300 milicores de CPU
+          requests: #Solicitud mínima de recursos
+            cpu: 100m
+        volumeMounts: #Lista de volúmenes que deben ser montados en el contenedor
+        - name: wordpress-persistent-storage #Nombre del volumen
+          mountPath: /var/www/html #Ruta en la que se monta el volumen dentro del contenedor
+      volumes: #Lista de volúmenes que deben ser utilizados por los Pods
+        - name: wordpress-persistent-storage
+          persistentVolumeClaim: #Especifica una reclamación de volumen persistente
+            claimName: wp-pv-claim #Nombre de la reclamación de volumen persistente creado antes

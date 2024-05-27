@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wordpress-ingress
+  namespace: naro
+spec:
+  rules:
+  - host: www.naro.intranet
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: wordpress-service
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - www.naro.intranet
+    secretName: secret-tls
+
+
+
+

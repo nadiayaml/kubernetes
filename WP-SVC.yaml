@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service #Tipo de objeto
+metadata:
+  name: wordpress-service
+  namespace: naro #Namespace donde se va a crear
+  labels: #Etiquetas para facilitar su identificación y selección
+    app: wordpress
+spec:
+  ports:
+    - port: 80 #El puerto que el Service expondrá
+      targetPort: 80 #El puerto en el que el contenedor está escuchando
+      nodePort: 30080 #El puerto en los nodos del clúster en el que se expondrá el Service
+  selector: #Selecciona los pods que este servicio gestionará, basándose en las etiquetas
+    app: wordpress 
+    tier: frontend
+  type: NodePort # Especifica que el servicio debe ser expuesto a través de un puerto 
+  # en los nodos del clúster, haciéndolo accesible externamente.

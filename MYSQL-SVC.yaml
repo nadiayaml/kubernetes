@@ -1,0 +1,17 @@
+apiVersion: v1 
+kind: Service #Tipo de objeto
+metadata:
+  name: wordpress-mysql-service
+  namespace: naro
+  labels:
+    app: wordpress            
+spec:  
+  selector: #Etiquetas que Kubernetes utilizará para seleccionar los Pods que serán gestionados por este Service
+    app: wordpress
+    tier: mysql     
+  ports:
+    - name: mysql #Nombre del puerto
+      protocol: TCP
+      port: 3306 #Puerto que el Service expondrá
+  clusterIP: None #Indica que este Service debe actuar como un Headless Service no se asignará una IP de clúster al Service 
+  # y se utilizará principalmente para descubrimiento de servicios y gestión de DNS.

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolume #Tipo de objeto
+metadata:
+  name: mysql-pv
+spec:
+  storageClassName: manual #Clase de almacenamiento que se debe utilizar
+  capacity: #Capacidad del almacenamiento proporcionado por el PV.
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce #Permite que el volumen sea montado en modo lectura/escritura por un único nodo
+  persistentVolumeReclaimPolicy: Delete #El volumen persistente se eliminará automáticamente cuando el PVC asociado sea eliminado
+  hostPath: #Volumen que se monta desde el sistema de archivos del nodo anfitrión
+    path: /data/mysql #Ruta en el sistema de archivos del nodo donde se encuentra el almacenamiento

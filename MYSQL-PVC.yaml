@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim #Tipo objeto
+metadata:
+  name: mysql-pv-claim
+  namespace: naro
+  labels:
+    app: wordpress
+spec:
+  storageClassName: manual #Clase de almacenamiento que se debe utilizar
+  accessModes:
+    - ReadWriteOnce #Permite que el volumen sea montado en modo lectura/escritura por un único nodo
+  volumeMode: Filesystem #El volumen debe ser montado como un sistema de archivos
+  resources: #Define los recursos solicitados por el PVC
+    requests:
+      storage: 20Gi
+  volumeName: mysql-pv #Especifica el nombre del PV que se reclamará

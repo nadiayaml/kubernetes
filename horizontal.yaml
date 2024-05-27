@@ -1,0 +1,19 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler #Tipo de objeto
+metadata:
+  name: wordpress-hpa
+  namespace: naro
+spec:
+  maxReplicas: 5 #El número máximo de réplicas a las que puede escalar el Deployment
+  metrics: #Define las métricas que se utilizarán para decidir cuándo escalar
+  - resource: # Indica que se va a utilizar una métrica basada en recursos
+      name: cpu
+      target:
+        averageUtilization: 50 #El objetivo es mantener la utilización promedio de CPU en un 50%
+        type: Utilization #El tipo de métrica es la utilización de recursos
+    type: Resource
+  minReplicas: 1 #El número mínimo de réplicas a las que puede escalar el Deployment
+  scaleTargetRef: #Define el recurso objetivo que se va a escalar
+    apiVersion: apps/v1
+    kind: Deployment
+    name: wordpress #El nombre del recurso objetivo, Deployment llamado wordpress.

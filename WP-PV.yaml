@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolume #Define el tipo de objeto
+metadata:
+  name: wordpress-pv
+spec:
+  storageClassName: manual #Clase de almacenamiendo que se debe utilizar
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce #Permite que el volumen sea montado en modo lectura/escritura por un único nodo
+  persistentVolumeReclaimPolicy: Delete #Especifica qué hacer con el volumen cuando el PVC que lo utiliza es eliminado
+  hostPath: #Define un volumen que se monta desde el sistema de archivos del nodo anfitrión
+    path: /data/wp #Ruta en el sistema de archivos del nodo donde se encuentra el almacenamiento

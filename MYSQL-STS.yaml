@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: StatefulSet      #Tipo de objeto
+metadata:
+  name: wordpress-mysql   
+  namespace: naro
+  labels:
+    app: wordpress     #Label para referenciarlo
+spec:
+  serviceName: wordpress-mysql-service       #Nombre del servicio
+  replicas: 1                     #Numero de pods
+  selector:
+    matchLabels: #Especifica las etiquetas que deben tener los Pods para ser seleccionados
+      app: wordpress
+      tier: mysql
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        tier: mysql
+    spec:
+      terminationGracePeriodSeconds: 1800 #Especifica el tiempo de gracia para la terminación del Pod
+      volumes:
+      - name: mysql-db-storage       #Nombre del volumen
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim     #Nombre del pvc creado anteriormente 
+      containers:
+      - name: mysql #Nombre del contenedor
+        image: mysql:8.0 #Imagen de Docker que debe ser utilizada
+        imagePullPolicy: Always #Siempre se descarga la imagen más reciente
+        env:                               #Variables
+        - name: MYSQL_ROOT_PASSWORD #Contraseña del usuario root de MySQL, obtenida del Secret
+          valueFrom:
+            secretKeyRef:  
+              name: mysql-secret
+              key: password
+        - name: MYSQL_USER  #Todas estas variables tienen que coincidir con el Deployment de WP 
+          value: wordpress     
+        - name: MYSQL_DATABASE
+          value: wordpress    
+        - name: MYSQL_PASSWORD   #Contraseña del usuario especificado en MYSQL_USER, también obtenida de un Secret
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password       
+        ports:
+        - containerPort: 3306 #Puerto en el que el contenedor escucha
+          name: mysql #Nombre del puerto
+        volumeMounts: #Lista de volúmenes que deben ser montados en el contenedor
+         - name: mysql-db-storage      #Nombre del volúmen
+           mountPath: /var/lib/mysql     #Ruta en la que se monta el volumen dentro del contenedor
