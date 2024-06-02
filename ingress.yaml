@@ -3,6 +3,9 @@ kind: Ingress
 metadata:
   name: wordpress-ingress
   namespace: naro
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+
 spec:
   rules:
   - host: www.naro.intranet
